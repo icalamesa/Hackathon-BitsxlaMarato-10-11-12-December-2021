@@ -28,11 +28,9 @@ def help(update, context):
 def photo(update, context):
     name = update.effective_chat.first_name
     path = "./files/" + name
-    file_id = update.message.photo[-1].file_id
-    print(file_id)
-    newFile = context.bot.getFile(file_id)
+    newFile = context.bot.getFile(update.message.photo[-1].file_id)
     time = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
-    newFile.download(os.path.join(path,time + ".jpg"))
+    newFile.download(os.path.join(path, time + ".jpg"))
     print("Download succesful")
 
 # Declare a constant with token acces read from token.txt
