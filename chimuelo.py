@@ -1,5 +1,4 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from staticmap import StaticMap, CircleMarker
 import datetime
 import os
 import os.path
