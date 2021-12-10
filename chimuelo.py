@@ -3,6 +3,10 @@ import datetime
 import os
 import os.path
 
+def _create_dir(PATH):
+    if not os.path.isdir(PATH):
+        os.mkdir(PATH)
+
 def start(update, context):
     """Defines a function that greets the user. It is executed when the bot
     receives the message /start."""
@@ -26,10 +30,11 @@ def help(update, context):
 
 def photo(update, context):
     name = update.effective_chat.first_name
-    path = "./files/" + name
+    _create_dir("files")
+    _create_dir("files/" + name)
     newFile = context.bot.getFile(update.message.photo[-1].file_id)
     time = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
-    newFile.download(os.path.join(path, time + ".jpg"))
+    newFile.download(os.path.join("./files/"+name+"/", time + ".jpg"))
     print("Download succesful")
 
 # Declare a constant with token acces read from token.txt
