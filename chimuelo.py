@@ -7,8 +7,10 @@ import os
 import os.path
 import random
 
-users = set()
-save_for_future = dict()
+users = set({})
+save_for_future = dict({})
+
+media = list({"images", "memes", "musica"})
 
 def _create_dir(PATH):
     if not os.path.isdir(PATH):
@@ -57,7 +59,7 @@ def save_photo(update, context):
     if save_for_future[id]:
         file = "/future_me"
     else:
-        file = "/audios"
+        file = "/images"
 
     _create_dir("files")
     _create_dir("files/" + id)
@@ -74,7 +76,7 @@ def send_photo(update, context):
         img = random.choice(imgs)
         im = open(os.path.join(path, img), 'rb')
         context.bot.send_photo(
-            chat_id=update.effective_chat.id,
+            chat_id = update.effective_chat.id,
             photo = im
         )
     except:
@@ -82,12 +84,6 @@ def send_photo(update, context):
             chat_id = update.effective_chat.id,
             text = "Encara no m'has enviat cap foto. Anima't a fer-ho per poder recuperar-ho en el futur!"
         )
-
-def eco(update, context):
-    context.bot.send_message(
-        chat_id = update.effective_chat.id,
-        text = update.message.text
-    )
 
 def save_audio(update, context):
     id = str(update.effective_chat.id)
@@ -207,18 +203,48 @@ updater.start_polling()
 
 # Loop to update the information about the congestions every five minutes
 while True:
-    t = Timer(60, timeout)
+    t = Timer(5, timeout)
     t.start()
 
-    lines = {}
-    with open("./frases/checkin.txt") as file:
-        lines = file.readlines()
-        lines = [line.rstrip() for line in lines]
+    r = random.randint(0, len(media)-1)
 
-    for id in users:
-        m = random.choice(lines)
-        bot.send_message(
-            chat_id = id,
-            text = m
-        )
+    try:
+        if media[r] == "images":
+            lines = {}
+            with open("./frases/checkin.txt") as file:
+                lines = file.readlines()
+                lines = [line.rstrip() for line in lines]
+
+            for id in users:
+                m = random.choice(lines)
+                bot.send_message(
+                    chat_id = id,
+                    text = m
+                )
+        elif media[r] == "memes":
+            print("Envio meme")
+            path = "./" + media[r]
+            imgs = os.listdir(path)
+            img = random.choice(imgs)
+
+            for id in users:
+                im = open(os.path.join(path, img), 'rb')
+                bot.send_photo(
+                    chat_id = id,
+                    photo = im
+                )
+        else:
+            print("Envio musica")
+            path = "./" + media[r]
+            auds = os.listdir(path)
+
+            for id in users:
+                aud = random.choice(auds)
+                bot.send_audio(
+                    chat_id = id,
+                    audio = open(os.path.join(path, aud), 'rb')
+                )
+    except:
+        print("Ps no he podido, oye :(")
+
     t.join()
