@@ -1,3 +1,13 @@
+--------------------- DESCRIPCIÓ BOT
+Soc un bot que t'ajudarà i t'acompanyarà a superar la mala etapa que estas passant.
+
+
+
+
+
+
+
+
 --------------------- INTRODUCCIÓ DEL BOT
 Encantat de coneixe't, soc en <nom_bot> i ens endisarem en una aventura on aprendrem molt de nosaltres.
 Com et dius?
