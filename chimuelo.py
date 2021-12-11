@@ -1,5 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from PIL import Image
+import telegram
+from threading import Timer
 import datetime
 import os
 import os.path
@@ -20,7 +22,7 @@ def start(update, context):
         text="Hi %s! How can I help you?" % update.effective_chat.first_name)
     context.bot.send_photo(
         chat_id=update.effective_chat.id,
-        photo=open("./fotos_bot/rect1675.png", 'rb'))
+        photo=open("./fotos_bot/pandbot_happy.png", 'rb'))
 
 def register(update, context):
     """Defines a function that registers the user. It is executed when the bot
@@ -113,6 +115,42 @@ def send_audio(update, context):
             text = "Encara no m'has enviat cap audio. Anima't a fer-ho per poder recuperar-ho en el futur!"
         )
 
+def save_text(update, context):
+    id = str(update.effective_chat.id)
+
+    if save_for_future[id]:
+        file = "/future_me"
+        name = "jujuuu_" + str(rand())
+    else:
+        file = "/messages"
+        name = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
+
+    _create_dir("files")
+    _create_dir("files/" + id)
+    _create_dir("files/" + id + file)
+    f = open(os.path.join("./files/" + id + file, name + ".txt"), 'w')
+    f.write(update.message.text)
+    f.close()
+    print("Download succesful")
+
+def send_text(update, context):
+    id = str(update.effective_chat.id)
+    try:
+        path = "./files/" + id + "/messages"
+        texts = os.listdir(path)
+        text = random.choice(texts)
+        f = open(os.path.join(path, text), 'r')
+        print(f.read())
+        context.bot.send_audio(
+            chat_id = update.effective_chat.id,
+            text = f.read()
+        )
+    except:
+        context.bot.send_message(
+            chat_id = update.effective_chat.id,
+            text = "Encara no m'has enviat cap text. Anima't a fer-ho per poder recuperar-ho en el futur!"
+        )
+
 def future_me(update, context):
     save_for_future[str(update.effective_chat.id)] = True
     context.bot.send_message(
@@ -127,8 +165,12 @@ def future_me(update, context):
 def stop(update, context):
     save_for_future[str(update.effective_chat.id)] = False
 
+def timeout():
+    print("Envio mensaje")
+
 # Declare a constant with token acces read from token.txt
 TOKEN = open('token.txt').read().strip()
+bot = telegram.Bot(token=TOKEN)
 
 # Create objects to work with Telegram
 updater = Updater(token=TOKEN, use_context=True)
@@ -140,6 +182,8 @@ dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('help', help))
 # Indicates that when the bot receives the command /register, the function help is executed
 dispatcher.add_handler(CommandHandler('register', register))
+# Indicates that when the bot receives the command /stop, the function stop is executed
+dispatcher.add_handler(CommandHandler('text', send_text))
 # Indicates that when the bot receives the command /photo, the function register is executed
 dispatcher.add_handler(CommandHandler('photo', send_photo))
 # Indicates that when the bot receives the command /audio, the function send_photo is executed
@@ -151,10 +195,28 @@ dispatcher.add_handler(CommandHandler('stop', stop))
 # Indicates that when the bot receives a photo, the function photo is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, save_photo))
 # Indicates that when the bot receives a text, the function eco is executed
-updater.dispatcher.add_handler(MessageHandler(Filters.text, eco))
+updater.dispatcher.add_handler(MessageHandler(Filters.text, save_text))
 # Indicates that when the bot receives an audio, the function audio is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.voice, save_audio))
 
 
 # Start the bot
 updater.start_polling()
+
+# Loop to update the information about the congestions every five minutes
+while True:
+    t = Timer(10, timeout)
+    t.start()
+
+    lines = {}
+    with open("frases") as file:
+        lines = file.readlines()
+        lines = [line.rstrip() for line in lines]
+
+    for id in users:
+        m = random.choice(lines)
+        bot.send_message(
+            chat_id = id,
+            text = m
+        )
+    t.join()
