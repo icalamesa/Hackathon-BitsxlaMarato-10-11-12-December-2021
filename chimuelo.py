@@ -1,4 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from PIL import Image
 import datetime
 import os
 import os.path
@@ -25,6 +26,7 @@ def register(update, context):
     receives the message /register."""
     # add user to the set of users
     users.add(update.effective_chat.id)
+    print(users)
 
 def help(update, context):
     """Defines a function that informs about what can be asked to the bot and
@@ -47,14 +49,21 @@ def photo(update, context):
     print("Download succesful")
 
 def send_photo(update, context):
-    path = "./files/" + str(update.effective_chat.id) + "/"
+    path = "./files/" + str(update.effective_chat.id)
     imgs = os.listdir(path)
     print(imgs)
     img = random.choice(imgs)
     print(img)
+    im = open(os.path.join(path, img), 'rb')
     context.bot.send_photo(
-        chat_id=update.effective_chat,
-        photo=open(os.path.join(path, random.choice(imgs)))
+        chat_id=update.effective_chat.id,
+        photo = im
+    )
+
+def eco(update, context):
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = update.message.text
     )
 
 # Declare a constant with token acces read from token.txt
@@ -74,6 +83,8 @@ dispatcher.add_handler(CommandHandler('register', register))
 dispatcher.add_handler(CommandHandler('photo', send_photo))
 # Indicates that when the bot receives a photo, the function photo is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, photo))
+
+updater.dispatcher.add_handler(MessageHandler(Filters.text, eco))
 
 # Start the bot
 updater.start_polling()
