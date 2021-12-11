@@ -1,10 +1,12 @@
+--------------------- INTRODUCCIÓ DEL BOT
+
 Encantat de coneixe't, soc en <nom_bot> i ens endisarem en una aventura on aprendrem molt de nosaltres.
 
 Com et dius?
 
 Explica'm algo de tu.
 
----------------------
+--------------------- PREGUNTES
 
 Bon dia! Com estas?
 
@@ -12,21 +14,19 @@ Què has fet avui?
 
 Com et trobes?
 
-
-
-
----------------------
-
-Reptes del dia:
-	- Per què no et fas una foto rient i me la envies?
-	- Per què no intentes meditar 5 minuts?
-	- Per què no surts a caminar 10 minuts?
-	- 
-	
----------------------
-	
 Com et trobes? Fa dies que no parlem...
 
----------------------
+--------------------- REPTES DEL DIA
+
+Per què no et fas una foto rient i me la envies?
+
+Per què no intentes meditar 5 minuts?
+
+Per què no surts a caminar 10 minuts?
+
+Intenta 
+
+--------------------- FRASES MOTIVADORES
 
 Recorda que està bé estimar-te als altres, però sempre has de tenir temps d'estimar-te a tu mateix
+
