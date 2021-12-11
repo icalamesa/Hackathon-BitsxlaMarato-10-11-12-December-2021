@@ -1,9 +1,17 @@
-Encantat de poder-te conèixer, soc en <nom_bot> i ens endisarem en una abentura on aprendrem molt de nosaltres.
+Encantat de coneixe't, soc en <nom_bot> i ens endisarem en una aventura on aprendrem molt de nosaltres.
 
 Bon dia, com estas?
+
+Com estas?
 
 Què has fet avui?
 
 Com et trobes? Fa dies que no parlem...
 
 Com et trobes?
+
+
+
+Reptes del dia:
+	-Fes-te una foto rient i envia-me-la!
+	-
