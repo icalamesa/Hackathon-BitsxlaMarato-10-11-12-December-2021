@@ -14,19 +14,24 @@ def _create_dir(PATH):
     if not os.path.isdir(PATH):
         os.mkdir(PATH)
 
+def timeout():
+    print("Envio mensaje")
+
 def start(update, context):
-    """Defines a function that greets the user. It is executed when the bot
-    receives the message /start."""
     context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="Hi %s! How can I help you?" % update.effective_chat.first_name)
+        chat_id = update.effective_chat.id,
+        text = "Hola %s!" % update.effective_chat.first_name
+        )
     context.bot.send_photo(
-        chat_id=update.effective_chat.id,
-        photo=open("./fotos_bot/pandbot_happy.png", 'rb'))
+        chat_id = update.effective_chat.id,
+        photo = open("./fotos_bot/pandbot_happy.png", 'rb')
+        )
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = "Envia /ajuda per veure quines comandes pots utilitzar."
+        )
 
 def register(update, context):
-    """Defines a function that registers the user. It is executed when the bot
-    receives the message /register."""
     # add user to the set of users
     users.add(update.effective_chat.id)
     save_for_future[str(update.effective_chat.id)] = False
@@ -35,12 +40,12 @@ def help(update, context):
     """Defines a function that informs about what can be asked to the bot and
     what does it do every command."""
     info = "Aquí tens una llista de les comandes que pots utilitzar:\n "
-    info += "La comanda /help dona informació de totes les comandes.\n"
+    info += "La comanda /ajuda dona informació de totes les comandes.\n"
     info += "La comanda /start comença una conversa.\n"
-    info += "La comanda /register comença una conversa.\n"
+    info += "La comanda /registre comença una conversa.\n"
     info += "La comanda /foto t'envia una foto d'algun moment feliç.\n"
     info += "La comanda /audio t'envia un audio d'algun moment feliç.\n"
-    info += "La comanda /futureme guarda un fitxer de la teva preferència"
+    info += "La comanda /jo_futur guarda un fitxer de la teva preferència"
     info += "perquè puguis recordar-ho en la data que vulguis.\n"
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -140,10 +145,10 @@ def send_text(update, context):
         texts = os.listdir(path)
         text = random.choice(texts)
         f = open(os.path.join(path, text), 'r')
-        print(f.read())
-        context.bot.send_audio(
+        m = f.read()
+        context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text = f.read()
+            text = m
         )
     except:
         context.bot.send_message(
@@ -165,9 +170,6 @@ def future_me(update, context):
 def stop(update, context):
     save_for_future[str(update.effective_chat.id)] = False
 
-def timeout():
-    print("Envio mensaje")
-
 # Declare a constant with token acces read from token.txt
 TOKEN = open('token.txt').read().strip()
 bot = telegram.Bot(token=TOKEN)
@@ -179,23 +181,23 @@ dispatcher = updater.dispatcher
 # Indicates that when the bot receives the command /start, the function start is executed
 dispatcher.add_handler(CommandHandler('start', start))
 # Indicates that when the bot receives the command /help, the function help is executed
-dispatcher.add_handler(CommandHandler('help', help))
+dispatcher.add_handler(CommandHandler('ajuda', help))
 # Indicates that when the bot receives the command /register, the function help is executed
-dispatcher.add_handler(CommandHandler('register', register))
+dispatcher.add_handler(CommandHandler('registre', register))
 # Indicates that when the bot receives the command /stop, the function stop is executed
 dispatcher.add_handler(CommandHandler('text', send_text))
 # Indicates that when the bot receives the command /photo, the function register is executed
-dispatcher.add_handler(CommandHandler('photo', send_photo))
+dispatcher.add_handler(CommandHandler('foto', send_photo))
 # Indicates that when the bot receives the command /audio, the function send_photo is executed
 dispatcher.add_handler(CommandHandler('audio', send_audio))
 # Indicates that when the bot receives the command /futureme, the function future_me is executed
-dispatcher.add_handler(CommandHandler('futureme', future_me))
+dispatcher.add_handler(CommandHandler('jo_futur', future_me))
 # Indicates that when the bot receives the command /stop, the function stop is executed
-dispatcher.add_handler(CommandHandler('stop', stop))
-# Indicates that when the bot receives a photo, the function photo is executed
-updater.dispatcher.add_handler(MessageHandler(Filters.photo, save_photo))
+dispatcher.add_handler(CommandHandler('para', stop))
 # Indicates that when the bot receives a text, the function eco is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.text, save_text))
+# Indicates that when the bot receives a photo, the function photo is executed
+updater.dispatcher.add_handler(MessageHandler(Filters.photo, save_photo))
 # Indicates that when the bot receives an audio, the function audio is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.voice, save_audio))
 
@@ -205,11 +207,11 @@ updater.start_polling()
 
 # Loop to update the information about the congestions every five minutes
 while True:
-    t = Timer(10, timeout)
+    t = Timer(60, timeout)
     t.start()
 
     lines = {}
-    with open("frases") as file:
+    with open("./frases/checkin.txt") as file:
         lines = file.readlines()
         lines = [line.rstrip() for line in lines]
 
