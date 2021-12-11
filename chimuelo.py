@@ -2,6 +2,9 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import datetime
 import os
 import os.path
+import random
+
+users = set()
 
 def _create_dir(PATH):
     if not os.path.isdir(PATH):
@@ -17,6 +20,12 @@ def start(update, context):
         chat_id=update.effective_chat.id,
         photo=open('happy.png', 'rb'))
 
+def register(update, context):
+    """Defines a function that registers the user. It is executed when the bot
+    receives the message /register."""
+    # add user to the set of users
+    users.add(update.effective_chat.id)
+
 def help(update, context):
     """Defines a function that informs about what can be asked to the bot and
     what does it do every command."""
@@ -29,13 +38,24 @@ def help(update, context):
         text=info)
 
 def photo(update, context):
-    name = update.effective_chat.first_name
+    name = str(update.effective_chat.id)
     _create_dir("files")
     _create_dir("files/" + name)
     newFile = context.bot.getFile(update.message.photo[-1].file_id)
     time = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
-    newFile.download(os.path.join("./files/"+name+"/", time + ".jpg"))
+    newFile.download(os.path.join("./files/" + name + "/", time + ".jpg"))
     print("Download succesful")
+
+def send_photo(update, context):
+    path = "./files/" + str(update.effective_chat.id) + "/"
+    imgs = os.listdir(path)
+    print(imgs)
+    img = random.choice(imgs)
+    print(img)
+    context.bot.send_photo(
+        chat_id=update.effective_chat,
+        photo=open(os.path.join(path, random.choice(imgs)))
+    )
 
 # Declare a constant with token acces read from token.txt
 TOKEN = open('token.txt').read().strip()
@@ -48,6 +68,10 @@ dispatcher = updater.dispatcher
 dispatcher.add_handler(CommandHandler('start', start))
 # Indicates that when the bot receives the command /help, the function help is executed
 dispatcher.add_handler(CommandHandler('help', help))
+# Indicates that when the bot receives the command /register, the function help is executed
+dispatcher.add_handler(CommandHandler('register', register))
+# Indicates that when the bot receives the command /photo, the function help is executed
+dispatcher.add_handler(CommandHandler('photo', send_photo))
 # Indicates that when the bot receives a photo, the function photo is executed
 updater.dispatcher.add_handler(MessageHandler(Filters.photo, photo))
 
