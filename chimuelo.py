@@ -8,8 +8,8 @@ import os.path
 import random
 
 users = set({})
-save_for_future = dict({})
-to_send = dict({})
+save_for_future = {}
+to_send = {}
 
 media = list({"images", "memes", "musica"})
 
@@ -61,10 +61,32 @@ def check_in():
 
 def future_logs():
     today = datetime.datetime.now().strftime("%d-%m-%y")
-    for date, id in to_send:
-        if date == today:
-            path = "./files/" + id + "future_me/" + date
-            
+    if today in to_send.keys():
+        for id in to_send[today]:
+            path = "./files/" + str(id) + "/future_me/" + today
+            files = os.listdir(path)
+
+            for f in files:
+                m = open(os.path.join(path, f), 'rb')
+                if f[-1] == 'g': # jpg -> image
+                    bot.send_photo(
+                        chat_id = id,
+                        photo = m
+                    )
+                elif f[-1] == '3': # mp3 -> audio
+                    bot.send_audio(
+                        chat_id = id,
+                        audio = m
+                    )
+                else: # txt -> text
+                    mm = m.read()
+                    bot.send_message(
+                        chat_id = id,
+                        text = mm
+                    )
+    del to_send[today]
+    
+    print("He enviat tot fins avui")
 
 def start(update, context):
     context.bot.send_message(
@@ -82,9 +104,9 @@ def start(update, context):
 
 def register(update, context):
     # add user to the set of users
-    id = update.effective_chat.id
+    id = str(update.effective_chat.id)
     users.add(id)
-    save_for_future[id] = False
+    save_for_future.update({id : list({False, ""})})
     _create_dir("files/" + id)
     _create_dir("files/" + id + "/images")
     _create_dir("files/" + id + "/audios")
@@ -110,15 +132,19 @@ def help(update, context):
 def save_photo(update, context):
     id = str(update.effective_chat.id)
 
-    if save_for_future[id]:
-        file = "/future_me"
+    if save_for_future[id][0]:
+        file = "/future_me/" + save_for_future[id][1]
     else:
         file = "/images"
 
+    name = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
+
     newFile = context.bot.getFile(update.message.photo[-1].file_id)
-    time = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
-    newFile.download(os.path.join("./files/" + id + file, time + ".jpg"))
+    newFile.download(os.path.join("./files/" + id + file, name + ".jpg"))
     print("Download succesful")
+
+    if save_for_future[id][0]:
+        return MEDIA or STOP
 
 def send_photo(update, context):
     try:
@@ -138,15 +164,20 @@ def send_photo(update, context):
 
 def save_audio(update, context):
     id = str(update.effective_chat.id)
-    if save_for_future[id]:
-        file = "/future_me"
+
+    if save_for_future[id][0]:
+        file = "/future_me/" + save_for_future[id][1]
     else:
         file = "/audios"
 
+    name = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
+
     voice = context.bot.getFile(update.message.voice.file_id)
-    time = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
-    voice.download(os.path.join("./files/" + id + file, time + ".mp3"))
+    voice.download(os.path.join("./files/" + id + file, name + ".mp3"))
     print("Download succesful")
+
+    if save_for_future[id][0]:
+        return MEDIA or STOP
 
 def send_audio(update, context):
     id = str(update.effective_chat.id)
@@ -167,17 +198,20 @@ def send_audio(update, context):
 def save_text(update, context):
     id = str(update.effective_chat.id)
 
-    if save_for_future[id]:
-        file = "/future_me"
-        name = "jujuuu_" + str(rand())
+    if save_for_future[id][0]:
+        file = "/future_me/" + save_for_future[id][1]
     else:
         file = "/messages"
-        name = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
+
+    name = datetime.datetime.now().strftime("%d-%m-%y_%H:%M,%S")
 
     f = open(os.path.join("./files/" + id + file, name + ".txt"), 'w')
     f.write(update.message.text)
     f.close()
     print("Download succesful")
+
+    if save_for_future[id][0]:
+        return MEDIA or STOP
 
 def send_text(update, context):
     id = str(update.effective_chat.id)
@@ -198,45 +232,58 @@ def send_text(update, context):
         )
 
 def future_me(update, context):
-    save_for_future[str(update.effective_chat.id)] = True
+    id = str(update.effective_chat.id)
+    save_for_future[id] = list({True, ""})
     context.bot.send_message(
         chat_id = update.effective_chat.id,
         text = "Utilitza la comanda /data seguida d'una data en format dd-mm-aa per saber quan vols que t'enviem el que penjis."
     )
     return DATE
-    # context.bot.send_message(
-    #     chat_id = update.effective_chat.id,
-    #     text = "Envia'm el que vulguis guardar pel teu jo futur."
-    # )
-    # context.bot.send_message(
-    #     chat_id = update.effective_chat.id,
-    #     text = "Utilitza /para quan no et vulguis enviar res més."
-    # )
 
 def date(update, context):
     date = update.message.text[6:]
-    id = update.effective_chat.id
-    to_send[date] = id
-    return MEDIA
+    id = str(update.effective_chat.id)
+    save_for_future[id] = list({True, date})
+
+    if date in to_send.keys():
+        to_send[date].append(id)
+    else:
+        to_send.update({date : list({id})})
+
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = "Envia'm el que vulguis guardar pel teu jo futur."
+    )
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = "Utilitza /para quan no et vulguis enviar res més."
+    )
+
+    _create_dir("files/" + id + "/future_me/" + date)
+
+    return MEDIA or STOP
 
 def stop(update, context):
-    save_for_future[str(update.effective_chat.id)] = False
+    id = str(update.effective_chat.id)
+    save_for_future[id] = list({False, ""})
     return ConversationHandler.END
 
 # Declare a constant with token acces read from token.txt
 TOKEN = open('token.txt').read().strip()
-bot = telegram.Bot(token=TOKEN)
+bot = telegram.Bot(token = TOKEN)
 
 # Create objects to work with Telegram
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
+
+DATE, MEDIA, STOP = range(3)
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('jo_futur', future_me)],
     fallbacks=[],
 
     states={
-        DATE: [CommandHandler('name', name)],
+        DATE: [CommandHandler('data', date)],
         MEDIA: [MessageHandler(Filters.text, save_text), MessageHandler(Filters.photo, save_photo), MessageHandler(Filters.voice, save_audio)],
         STOP: [CommandHandler('para', stop)],
     },
@@ -271,7 +318,7 @@ _create_dir("files")
 # Loop to update the information about the congestions every five minutes
 while True:
     t1 = Timer(60, check_in)
-    t2 = Timer(10, future_logs)
+    t2 = Timer(60, future_logs)
     t1.start()
     t2.start()
     t1.join()
