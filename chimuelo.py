@@ -67,7 +67,9 @@ def future_logs():
             files = os.listdir(path)
 
             for f in files:
+                print(f)
                 m = open(os.path.join(path, f), 'rb')
+                print(f[-1])
                 if f[-1] == 'g': # jpg -> image
                     bot.send_photo(
                         chat_id = id,
@@ -79,27 +81,38 @@ def future_logs():
                         audio = m
                     )
                 else: # txt -> text
+                    m = open(os.path.join(path, f), 'r')
                     mm = m.read()
                     bot.send_message(
                         chat_id = id,
                         text = mm
                     )
     del to_send[today]
-    
+
     print("He enviat tot fins avui")
 
 def start(update, context):
+    t1 = "Hola %s!" % update.effective_chat.first_name
     context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text = "Hola %s!" % update.effective_chat.first_name
+        text = t1
         )
+
     context.bot.send_photo(
         chat_id = update.effective_chat.id,
         photo = open("./fotos_bot/pandbot_happy.png", 'rb')
         )
+    t2 = "El primer que necessitarem es que enviis la comanda /registre per \n"
+    t2 += "registrar-te."
     context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text = "Envia /ajuda per veure quines comandes pots utilitzar."
+        text = t2
+        )
+
+    t3 = "Seguidament, envia /ajuda per veure quines comandes pots utilitzar."
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = t3
         )
 
 def register(update, context):
@@ -114,8 +127,6 @@ def register(update, context):
     _create_dir("files/" + id + "/future_me")
 
 def help(update, context):
-    """Defines a function that informs about what can be asked to the bot and
-    what does it do every command."""
     info = "Aquí tens una llista de les comandes que pots utilitzar:\n "
     info += "La comanda /ajuda dona informació de totes les comandes.\n"
     info += "La comanda /start comença una conversa.\n"
@@ -124,6 +135,7 @@ def help(update, context):
     info += "La comanda /audio t'envia un audio d'algun moment feliç.\n"
     info += "La comanda /jo_futur guarda un fitxer de la teva preferència"
     info += "perquè puguis recordar-ho en la data que vulguis.\n"
+
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=info
@@ -144,7 +156,7 @@ def save_photo(update, context):
     print("Download succesful")
 
     if save_for_future[id][0]:
-        return MEDIA or STOP
+        return CHOOSE
 
 def send_photo(update, context):
     try:
@@ -177,7 +189,7 @@ def save_audio(update, context):
     print("Download succesful")
 
     if save_for_future[id][0]:
-        return MEDIA or STOP
+        return CHOOSE
 
 def send_audio(update, context):
     id = str(update.effective_chat.id)
@@ -198,6 +210,8 @@ def send_audio(update, context):
 def save_text(update, context):
     id = str(update.effective_chat.id)
 
+    print(save_for_future[id])
+
     if save_for_future[id][0]:
         file = "/future_me/" + save_for_future[id][1]
     else:
@@ -211,7 +225,8 @@ def save_text(update, context):
     print("Download succesful")
 
     if save_for_future[id][0]:
-        return MEDIA or STOP
+        print("He pujat correctament")
+        return CHOOSE
 
 def send_text(update, context):
     id = str(update.effective_chat.id)
@@ -261,7 +276,7 @@ def date(update, context):
 
     _create_dir("files/" + id + "/future_me/" + date)
 
-    return MEDIA or STOP
+    return CHOOSE
 
 def stop(update, context):
     id = str(update.effective_chat.id)
@@ -276,7 +291,7 @@ bot = telegram.Bot(token = TOKEN)
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
-DATE, MEDIA, STOP = range(3)
+DATE, CHOOSE = range(2)
 
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('jo_futur', future_me)],
@@ -284,8 +299,10 @@ conv_handler = ConversationHandler(
 
     states={
         DATE: [CommandHandler('data', date)],
-        MEDIA: [MessageHandler(Filters.text, save_text), MessageHandler(Filters.photo, save_photo), MessageHandler(Filters.voice, save_audio)],
-        STOP: [CommandHandler('para', stop)],
+        CHOOSE: [MessageHandler(Filters.text, save_text),
+                MessageHandler(Filters.photo, save_photo),
+                MessageHandler(Filters.voice, save_audio),
+                CommandHandler('para', stop)],
     },
 )
 updater.dispatcher.add_handler(conv_handler)
@@ -317,9 +334,9 @@ _create_dir("files")
 
 # Loop to update the information about the congestions every five minutes
 while True:
-    t1 = Timer(60, check_in)
+    #t1 = Timer(60, check_in)
     t2 = Timer(60, future_logs)
-    t1.start()
+    #t1.start()
     t2.start()
-    t1.join()
+    #t1.join()
     t2.join()
