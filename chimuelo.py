@@ -178,9 +178,11 @@ def send_photo(update, context):
             photo = im
         )
     except:
+        t = "Encara no m'has enviat cap foto. Anima't a fer-ho per poder "
+        t += "recuperar-ho en el futur!"
         context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text = "Encara no m'has enviat cap foto. Anima't a fer-ho per poder recuperar-ho en el futur!"
+            text =
         )
 
 def save_audio(update, context):
