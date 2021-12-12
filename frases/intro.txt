@@ -1,3 +1,9 @@
 Encantat de coneixe't, soc en PandBot i ens endisarem en una aventura on aprendrem molt de nosaltres.
 Com et dius?
 Explica'm algo de tu.
+
+
+
+
+## Inspiration
+Sometimes mental health problems emerge from daily tasks and routines. That's why we found out it would be helpful to create a tool to prevent this kind of issues.  As a result, we decided to do a Telegram bot because of its accessibility and simplicity.
