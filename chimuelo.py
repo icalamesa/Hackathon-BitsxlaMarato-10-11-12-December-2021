@@ -182,7 +182,7 @@ def send_photo(update, context):
         t += "recuperar-ho en el futur!"
         context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text =
+            text = t
         )
 
 def save_audio(update, context):
