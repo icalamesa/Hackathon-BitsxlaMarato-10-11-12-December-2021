@@ -8,3 +8,18 @@ Sometimes mental health problems emerge from daily tasks and routines. That's wh
 ## What it does
 Pandbot's main function is to go along with the user during daily life, to make the user **smile** and overcome his/her/their situation. User can send media from themselves to the bot and when they need it the bot will resend these good moments. Moreover, the bot sends daily challenges related to self-esteem such as walking or meditating.
 Finally we implemented a message and media system to resend messages to their future themselves.
+
+## How we built it
+We used python language to program the bot from Telegram, moreover we used Inkscape to graphically design the Pandbot.
+
+## Challenges we ran into
+Programming the bot itself is a big challenge for us. We also had difficulties debugging.
+
+## Accomplishments that we're proud of
+Mostly, we are proud of programming the bot.
+
+## What we learned
+We learn that mental health is a really big issue in our society that anyone can suffer. We really need to work on new technologies to help solving these problems.
+
+## What's next for Pandbot
+We thought about adding a voice recogniser feature to detect whether the user feels better or not.
