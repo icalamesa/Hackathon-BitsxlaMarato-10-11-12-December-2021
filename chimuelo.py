@@ -213,9 +213,11 @@ def send_audio(update, context):
             audio = open(os.path.join(path, aud), 'rb')
         )
     except:
+        t = "Encara no m'has enviat cap audio. Anima't a fer-ho per poder "
+        t += "recuperar-ho en el futur!"
         context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text = "Encara no m'has enviat cap audio. Anima't a fer-ho per poder recuperar-ho en el futur!"
+            text = t
         )
 
 def save_text(update, context):
