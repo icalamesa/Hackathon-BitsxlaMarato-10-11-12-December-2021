@@ -4,6 +4,9 @@ Explica'm algo de tu.
 
 
 
-
 ## Inspiration
 Sometimes mental health problems emerge from daily tasks and routines. That's why we found out it would be helpful to create a tool to prevent this kind of issues.  As a result, we decided to do a Telegram bot because of its accessibility and simplicity.
+
+## What it does
+Pandbot's main function is to go along with the user during daily life, to make the user **smile** and overcome his/her/their situation. User can send media from themselves to the bot and when they need it the bot will resend these good moments.
+Moreover, the bot sends daily challenges related to self-esteem
