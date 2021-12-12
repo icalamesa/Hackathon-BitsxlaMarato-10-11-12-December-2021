@@ -131,6 +131,11 @@ def register(update, context):
     _create_dir("files/" + id + "/messages")
     _create_dir("files/" + id + "/future_me")
 
+    context.bot.send_message(
+        chat_id = update.effective_chat.id,
+        text = "Ja estàs registrat."
+    )
+
 def help(update, context):
     info = "Aquí tens una llista de les comandes que pots utilitzar:\n "
     info += "La comanda /ajuda dona informació de totes les comandes.\n"
