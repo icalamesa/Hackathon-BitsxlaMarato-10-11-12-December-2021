@@ -14,7 +14,7 @@ users = set({})
 save_for_future = {}
 to_send = {}
 
-media = list({"images", "memes", "musica"})
+media = list({"fotos", "frases", "musica"})
 
 def _create_dir(PATH):
     if not os.path.isdir(PATH):
@@ -104,7 +104,7 @@ def start(update, context):
 
     context.bot.send_photo(
         chat_id = update.effective_chat.id,
-        photo = open("./fotos_bot/pandbot_happy.png", 'rb')
+        photo = open("./fotos/pandbot_happy.png", 'rb')
         )
 
     t3 = "El primer que necessitarem es que enviis la comanda /registre per \n"
